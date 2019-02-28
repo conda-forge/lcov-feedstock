@@ -1,4 +1,4 @@
-{% set version = "1.13" %}
+{% set version = "1.14" %}
 
 package:
   name: lcov
@@ -7,12 +7,12 @@ package:
 source:
   - url: https://github.com/linux-test-project/lcov/archive/v{{ version }}.tar.gz
     fn: lcov-{{ version }}.tar.gz
-    sha256: 3650ad22773c56aaf8c5288e068dd35bd03f57659b6455dc6f8e21451c83b5e8
+    sha256: f19eff1dcf5f40f4a57d959584acd318155873c43d723e25dd1b91636f94ca41
     patches:
       - fix_perl_in_conda.patch
 
 build:
-  number: 1000
+  number: 0
 
 requirements:
   build:
