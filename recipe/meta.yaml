@@ -1,5 +1,5 @@
-{% set version = "1.14" %}  # remember to update add_version.patch
-{% set sha256 = "f19eff1dcf5f40f4a57d959584acd318155873c43d723e25dd1b91636f94ca41" %}
+{% set version = "1.15" %}  # remember to update add_version.patch
+{% set sha256 = "d88b0718f59815862785ac379aed56974b9edd8037567347ae70081cd4a3542a" %}
 
 package:
   name: lcov
@@ -27,13 +27,11 @@ test:
 
 about:
   home: http://ltp.sourceforge.net/test/coverage/lcov.php
-  summary: 'LCOV is an extension of GCOV, a GNU tool which provides information about
-  what parts of a program are actually executed (i.e. "covered") while running
-  a particular test case.'
+  summary: LCOV is an extension of GCOV, a GNU tool which provides information about what parts of a program are actually executed (i.e. "covered") while running a particular test case.
   license: GPL-2
   license_family: GPL-2
   license_url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
-  license_file: '{{ environ["SRC_DIR"] }}/COPYING'
+  license_file: {{ environ["SRC_DIR"] }}/COPYING
 
 extra:
   recipe-maintainers:
