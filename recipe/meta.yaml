@@ -14,10 +14,11 @@ build:
 
 requirements:
   build:
-    - perl
+    - perl 5.*
     - make
+  host:
   run:
-    - perl
+    - perl 5.*
 
 test:
   commands:
