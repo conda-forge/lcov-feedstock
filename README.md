@@ -3,7 +3,7 @@ About lcov
 
 Home: http://ltp.sourceforge.net/test/coverage/lcov.php
 
-Package license: [GPL-2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+Package license: [GPL-2.0-or-later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/lcov-feedstock/blob/master/LICENSE.txt)
 
