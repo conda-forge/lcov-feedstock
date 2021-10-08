@@ -16,6 +16,7 @@ requirements:
   build:
     - perl 5.*
     - make
+    - posix    # [win]
   host:
   run:
     - perl 5.*
