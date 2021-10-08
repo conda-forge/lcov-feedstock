@@ -18,7 +18,8 @@ requirements:
   build:
     - perl 5.*
     - make
-    - posix    # [win]
+    - m2-bash       # [win]
+    - m2-coreutils  # [win]
   host:
   run:
     - perl 5.*
