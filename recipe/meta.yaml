@@ -1,4 +1,4 @@
-{% set version = "1.15" %}  # remember to update add_version.patch
+{% set version = "1.15" %}
 {% set sha256 = "d88b0718f59815862785ac379aed56974b9edd8037567347ae70081cd4a3542a" %}
 
 package:
@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/linux-test-project/lcov/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - add_version.patch
 
 build:
   number: 1
@@ -23,7 +21,8 @@ requirements:
 
 test:
   commands:
-    - lcov --version
+    - lcov --version | grep -qF '{{ version }}'    # [unix]
+    - lcov --version | findstr "/C:{{ version }}"  # [win]
 
 about:
   home: http://ltp.sourceforge.net/test/coverage/lcov.php
