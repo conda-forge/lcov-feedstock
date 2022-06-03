@@ -1,5 +1,5 @@
-{% set version = "1.15" %}
-{% set sha256 = "d88b0718f59815862785ac379aed56974b9edd8037567347ae70081cd4a3542a" %}
+{% set version = "1.16" %}
+{% set sha256 = "02eece2802697c079ff51ce056b0a6691020f21082c46ccfe6604bbfd06d7937" %}
 
 package:
   name: lcov
@@ -12,7 +12,7 @@ source:
     - 0001-Run-updateversion.pl-directly-without-env-for-Windows.patch
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
