@@ -1,5 +1,5 @@
-{% set version = "1.16" %}
-{% set sha256 = "02eece2802697c079ff51ce056b0a6691020f21082c46ccfe6604bbfd06d7937" %}
+{% set version = "2.0" %}
+{% set sha256 = "3ec0795f2776e69e4c8a35a34ddd199d0ee2119a2e65a3a944374e52edb06b26" %}
 
 package:
   name: lcov
@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/linux-test-project/lcov/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - 0001-Run-updateversion.pl-directly-without-env-for-Windows.patch
 
 build:
   number: 0
