@@ -1,5 +1,5 @@
-{% set version = "1.16" %}
-{% set sha256 = "02eece2802697c079ff51ce056b0a6691020f21082c46ccfe6604bbfd06d7937" %}
+{% set version = "2.1" %}
+{% set sha256 = "c09fc48d1576da29a607a5f91cb51909f7be25d494733dc0fed957abf6317fa0" %}
 
 package:
   name: lcov
