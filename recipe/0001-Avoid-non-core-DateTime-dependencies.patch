@@ -1,0 +1,155 @@
+From: conda-forge <conda-forge@users.noreply.github.com>
+Subject: [PATCH] Avoid non-core DateTime dependencies
+
+Use epoch values and Time::Local instead of DateTime. Date::Parse remains an
+optional enhancement for --baseline-date; if unavailable, genhtml retains its
+existing fallback to the baseline file timestamp.
+
+--- a/lib/lcovutil.pm
++++ b/lib/lcovutil.pm
+@@ -18,7 +18,7 @@
+ use Digest::MD5 qw(md5_base64);
+ use FindBin;
+ use Getopt::Long;
+-use DateTime;
++use Time::Local qw(timegm);
+ use Config;
+ use POSIX;
+ use Fcntl qw(:flock SEEK_END);
+@@ -2911,31 +2911,11 @@
+ #
+ # parse_w3cdtf(date_string)
+ #
+-# Parse date string in W3CDTF format into DateTime object.
++# Parse date string in W3CDTF format into an epoch value.
+ #
+-my $have_w3cdtf;
+-
+ sub parse_w3cdtf($)
+ {
+-    if (!defined($have_w3cdtf)) {
+-        # check to see if the package is here for us to use..
+-        $have_w3cdtf = 1;
+-        eval {
+-            require DateTime::Format::W3CDTF;
+-            DateTime::Format::W3CDTF->import();
+-        };
+-        if ($@) {
+-            # package not there - fall back
+-            lcovutil::ignorable_warning($lcovutil::ERROR_PACKAGE,
+-                'package DateTime::Format::W3CDTF is not available - falling back to local implementation'
+-            );
+-            $have_w3cdtf = 0;
+-        }
+-    }
+     my $str = shift;
+-    if ($have_w3cdtf) {
+-        return DateTime::Format::W3CDTF->parse_datetime($str);
+-    }
+ 
+     my ($year, $month, $day, $hour, $min, $sec, $ns, $tz) =
+         (0, 1, 1, 0, 0, 0, 0, "Z");
+@@ -2987,15 +2967,13 @@
+         die("Invalid W3CDTF date format: $str\n");
+     }
+ 
+-    return
+-        DateTime->new(year       => $year,
+-                      month      => $month,
+-                      day        => $day,
+-                      hour       => $hour,
+-                      minute     => $min,
+-                      second     => $sec,
+-                      nanosecond => $ns,
+-                      time_zone  => $tz,);
++    my $epoch = timegm($sec, $min, $hour, $day, $month - 1, $year);
++    if ($tz ne "Z") {
++        my ($sign, $tz_hour, $tz_minute) = $tz =~ /^([+-])(\d\d):(\d\d)$/;
++        my $offset = ($tz_hour * 60 + $tz_minute) * 60;
++        $epoch += $sign eq '+' ? -$offset : $offset;
++    }
++    return $epoch;
+ }
+ 
+ package HTML_fileData;
+--- a/bin/genhtml
++++ b/bin/genhtml
+@@ -85,9 +85,6 @@
+ use Scalar::Util qw/looks_like_number/;
+ use Digest::MD5 qw(md5_base64);
+ use Cwd qw/abs_path realpath cwd/;
+-use DateTime;
+-#use Regexp::Common qw(time);  # damn - not installed
+-use Date::Parse;
+ use FileHandle;
+ use Carp;
+ use Storable;
+@@ -5683,10 +5680,8 @@
+     #   file is as of the epoch date.
+     # if this file is newer than that ($when is in the future of epoch) - then
+     #  warn and put this file into the 'zero age' bin.
+-    my $now =
+-        exists($ENV{SOURCE_DATE_EPOCH}) ?
+-        DateTime->from_epoch(epoch => $ENV{SOURCE_DATE_EPOCH}) :
+-        DateTime->now();
++    my $now = exists($ENV{SOURCE_DATE_EPOCH}) ?
++        $ENV{SOURCE_DATE_EPOCH} : time();
+     my $then = lcovutil::parse_w3cdtf($when);
+     if ($then > $now) {
+         if (lcovutil::warn_once($lcovutil::ERROR_INCONSISTENT_DATA, $path)) {
+@@ -5708,7 +5703,7 @@
+         }
+         return 0;
+     }
+-    return $then->delta_days($now)->in_units('days');
++    return int(($now - $then) / (24 * 60 * 60));
+ }
+ 
+ sub _load
+@@ -6662,7 +6657,7 @@
+                $jobId, $$, scalar(@$jobs),
+                $done - $childEnd,
+                (-f $file ? (-s $file) : 0) / (1024 * 1024),
+-               DateTime->now())
++               scalar(localtime()))
+             if ($main::debugScheduler);
+     };
+     if ($@ || !defined($data)) {
+@@ -6947,7 +6942,7 @@
+     my $dEnd = Time::HiRes::gettimeofday();
+     printf("  %d restore %d: %0.3fs %s (parallel %d)\n",
+            $jobId, $childPid, $dEnd - $dStart,
+-           DateTime->now(), $self->[CURRENT_PARALLEL])
++           scalar(localtime()), $self->[CURRENT_PARALLEL])
+         if $main::debugScheduler;
+ 
+     if (defined($dumped)) {
+@@ -7478,8 +7473,9 @@
+ 
+     if ($baseline_date) {
+         eval {
+-            my $epoch = Date::Parse::str2time($baseline_date);
+-            $baseline_create = DateTime->from_epoch(epoch => $epoch);
++            require Date::Parse;
++            $baseline_create = Date::Parse::str2time($baseline_date);
++            die "unable to parse date" unless defined($baseline_create);
+         };
+         if ($@) {
+             #did not parse
+@@ -7490,13 +7486,11 @@
+     }
+     if (!defined($baseline_create)) {
+         # if not specified, use 'last modified' of first baseline trace file
+-        my $create = (stat($base_filenames[0]))[9];
+-        $baseline_create = DateTime->from_epoch(epoch => $create);
+-        $baseline_date   = get_date_string($create)
++        $baseline_create = (stat($base_filenames[0]))[9];
++        $baseline_date   = get_date_string($baseline_create)
+             unless defined($baseline_date);
+     }
+-    $age_basefile =
+-        $baseline_create->delta_days(DateTime->now())->in_units('days');
++    $age_basefile = int((time() - $baseline_create) / (24 * 60 * 60));
+ }
+ 
+ # Make sure css_filename is an absolute path (in case we're changing

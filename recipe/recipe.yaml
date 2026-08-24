@@ -1,0 +1,65 @@
+context:
+  version: "2.5"
+
+package:
+  name: lcov
+  version: ${{ version }}
+
+source:
+  url: https://github.com/linux-test-project/lcov/releases/download/v${{ version }}/lcov-${{ version }}.tar.gz
+  sha256: 7e5e5a154bd5f3557659c328cab376764e7abd238bb403c424472c296b175126
+  patches:
+    - 0001-Avoid-non-core-DateTime-dependencies.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - make
+    - perl 5.*
+    - if: unix
+      then: coreutils
+    - if: win
+      then:
+        - m2-bash
+        - m2-coreutils
+  run:
+    - perl 5.*
+    - python
+    - xlsxwriter
+    - if: unix
+      then:
+        - perl-capture-tiny
+        - perl-devel-stacktrace
+
+tests:
+  - script:
+      - lcov --version
+      - genhtml --version
+      - py2lcov --help
+  - package_contents:
+      files:
+        - if: unix
+          then: bin/lcov
+          else: Library/bin/lcov
+        - if: unix
+          then: bin/genhtml
+          else: Library/bin/genhtml
+        - if: unix
+          then: bin/py2lcov
+          else: Library/bin/py2lcov
+
+about:
+  homepage: https://github.com/linux-test-project/lcov
+  repository: https://github.com/linux-test-project/lcov
+  documentation: https://github.com/linux-test-project/lcov/tree/v${{ version }}/docs
+  summary: LCOV is an extension of GCOV, a GNU tool which provides information about what parts of a program are actually executed (i.e. "covered") while running a particular test case.
+  license: GPL-2.0-or-later
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - mjscosta
+    - MuellerSeb
+    - wolfv
