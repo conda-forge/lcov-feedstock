@@ -15,7 +15,7 @@ for %%F in (lcov genhtml geninfo genpng gendesc perl2lcov llvm2lcov) do (
     copy "%RECIPE_DIR%\perl-tool.bat" "%LIBRARY_BIN%\%%F.bat"
     if !ERRORLEVEL! NEQ 0 exit 1
 )
-for %%F in (py2lcov xml2lcov xml2lcovutil) do (
+for %%F in (py2lcov xml2lcov) do (
     copy "%RECIPE_DIR%\python-tool.bat" "%LIBRARY_BIN%\%%F.bat"
     if !ERRORLEVEL! NEQ 0 exit 1
 )
