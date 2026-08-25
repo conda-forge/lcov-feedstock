@@ -12,7 +12,7 @@ source:
     - 0001-Avoid-non-core-DateTime-dependencies.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -38,6 +38,18 @@ tests:
       - lcov --version
       - genhtml --version
       - py2lcov --help
+      - if: unix
+        then:
+          - test ! -e "$PREFIX/bin/perl2lcov"
+          - perl test-date-handling.pl "$PREFIX/lib/lcov" "$PREFIX/bin/genhtml"
+      - if: win
+        then:
+          - if exist "%LIBRARY_BIN%\perl2lcov" exit 1
+          - if exist "%LIBRARY_BIN%\perl2lcov.bat" exit 1
+          - perl test-date-handling.pl "%LIBRARY_PREFIX%\lib\lcov" "%LIBRARY_BIN%\genhtml.bat"
+    files:
+      recipe:
+        - test-date-handling.pl
   - package_contents:
       files:
         - if: unix

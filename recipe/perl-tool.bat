@@ -1,2 +1,2 @@
 @echo off
-perl "%CONDA_PREFIX%\Library\bin\%~n0" %*
+perl "%~dp0%~n0" %*
