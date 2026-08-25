@@ -1,2 +1,2 @@
 @echo off
-python "%CONDA_PREFIX%\Library\bin\%~n0" %*
+python "%~dp0%~n0" %*
