@@ -1,5 +1,5 @@
 context:
-  version: "2.5"
+  version: "2.6"
 
 package:
   name: lcov
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/linux-test-project/lcov/releases/download/v${{ version }}/lcov-${{ version }}.tar.gz
-  sha256: 7e5e5a154bd5f3557659c328cab376764e7abd238bb403c424472c296b175126
+  sha256: 67a45db99b8ef0260c3fac9a2e3749fd8fa350a15e235dd3c29b356d97755c75
   patches:
     - 0001-Avoid-non-core-DateTime-dependencies.patch
 
@@ -41,15 +41,14 @@ tests:
   - package_contents:
       files:
         - if: unix
-          then: bin/lcov
-          else: Library/bin/lcov
-        - if: unix
-          then: bin/genhtml
-          else: Library/bin/genhtml
-        - if: unix
-          then: bin/py2lcov
-          else: Library/bin/py2lcov
-
+          then:
+            - bin/lcov
+            - bin/genhtml
+            - bin/py2lcov
+          else:
+            - Library/bin/lcov
+            - Library/bin/genhtml
+            - Library/bin/py2lcov
 about:
   homepage: https://github.com/linux-test-project/lcov
   repository: https://github.com/linux-test-project/lcov
